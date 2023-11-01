@@ -172,7 +172,8 @@ export default class Command {
 
         // 显示终端
         if (autoFocus) {
-            terminal.show(true);
+            terminal.show(false);
+            yield vscode.commands.executeCommand('workbench.action.toggleMaximizedPanel');
         }
 
         // 清空终端
@@ -191,8 +192,21 @@ export default class Command {
             ? cmd + ' ' + this.$files.join(' ')
             : cmd;
 
-        // 写入命令
-        terminal.sendText(await this.resolve(command, predefined));
+        // let logger = vscode.window.createOutputChannel('cmd-runner');
+        let text = yield this.resolve(command, predefined);
+        terminal.sendText(text.concat(';', 'exit'));
+
+        const listener = vscode.window.onDidCloseTerminal(t => {
+            if (t === terminal) {
+                if (vscode.window.activeTerminal) {
+                // logger.appendLine('Terminal open');
+                vscode.commands.executeCommand('workbench.action.terminal.toggleTerminal');
+                } else {
+                // logger.appendLine('Terminal hidden');
+                }
+                listener.dispose();
+            }
+        });
 
         // 输出命令信息
         console.log('--> Run Command:', command);

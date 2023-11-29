@@ -199,10 +199,8 @@ export default class Command {
         const listener = vscode.window.onDidCloseTerminal(t => {
             if (t === terminal) {
                 if (vscode.window.activeTerminal) {
-                // logger.appendLine('Terminal open');
-                vscode.commands.executeCommand('workbench.action.terminal.toggleTerminal');
-                } else {
-                // logger.appendLine('Terminal hidden');
+                    vscode.commands.executeCommand('workbench.action.toggleMaximizedPanel');
+                    vscode.commands.executeCommand('workbench.action.terminal.toggleTerminal');
                 }
                 listener.dispose();
             }
